@@ -6,7 +6,7 @@ public class TestComplexity {
 
     public static void main(String[] args) {
 
-        for (int i = 20; i <= 20; i++) {
+        for (int i = 100; i <= 100; i++) {
             g(i);
         }
     }
@@ -19,11 +19,9 @@ public class TestComplexity {
     private static void g(int n) {
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= n; j += i) {
-                count++;
                 f();
             }
-            System.out.println(count);
-            count = 0;
+            System.out.println(i + " " + count);
         }
     }
 

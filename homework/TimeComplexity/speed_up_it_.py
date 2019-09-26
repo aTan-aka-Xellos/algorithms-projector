@@ -5,6 +5,19 @@
 # Вас запросили як спеціаліста з алгоритмів для усунення потенційної небезпеки. Пришвидшіть оригінальний алгоритм, аби він працював за лінію.
 
 # python3
+
+def newNoTwoSlash(url: str):
+    compact_url = '' if len(url) == 0 else url[0]
+
+    for i in range(1, len(url)):
+        if (url[i] == '/') and (url[i-1] == '/'):
+            i += 1
+        else:
+            compact_url += url[i]
+    return compact_url
+
+
+
 def noTwoSlash(url: str):
     _list = list(url)
     i = 1
@@ -16,3 +29,14 @@ def noTwoSlash(url: str):
         else:
             i += 1
     return ''.join(_list)
+
+
+def main():
+    print(newNoTwoSlash(""))
+    print(newNoTwoSlash("/page1///page2////page3/test.html"))
+    print(newNoTwoSlash("//page1///page2////page3/test.html"))
+    print(newNoTwoSlash("///page1///page2////page3/test.html"))
+    print(newNoTwoSlash("///page1///page2////page3/test.html//"))
+
+if __name__ == '__main__':
+    main()

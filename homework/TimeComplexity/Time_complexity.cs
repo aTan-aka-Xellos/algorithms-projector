@@ -45,13 +45,17 @@ f. for (i = 1; i <= n; i++)
 		for (j = 1; j < i; j *= 2)
 			f()
 
+// https://brilliant.org/wiki/harmonic-progression/ 
+// https://en.wikipedia.org/wiki/Harmonic_progression_(mathematics)
+// https://www.geeksforgeeks.org/harmonic-progression-sum/
 // i = 1,2,3...N
-// inner: N + N/2 + N/3...1 = 2N
-// O(2N) <- wrong
+// inner: N+N/2+N/3+N/4+ ... +N/N 
+// O(N*ln2N)
 g. for (i = 1; i <= n; i++)
 		for (j = 1; j <= n; j += i)
 			f()
 
+		
 
 // n=2 2 + 2/2 + 2/2 = 2+2 = 4 
 // n=3 3 + 3/2 + 3/2 = 3+1+1 = 5
@@ -70,6 +74,17 @@ h. void compute(int n)
 	  compute(n/2) 
 	  compute(n/2)
 	  
-n(n+1)/2 * n
+	  
+Total:
+a. O(logN)
+b. O((N^(1/2))
+c. O(256*N)
+d. O((n^4-19n^2+90)/2)
+e. O((n^4+2n^3+3n^2+2n)/8)
+f. O(log(n!))
+g. O(n*ln2n)
+h. O(nlogn) 
+
+
 	  
 	  
