@@ -4,15 +4,26 @@ public class TestComplexity {
 
     private static int count = 0;
 
+    private static void f() {
+        count++;
+    }
+
     public static void main(String[] args) {
 
         for (int i = 100; i <= 100; i++) {
-            g(i);
+            e(i);
         }
+        System.out.println(count);
     }
 
-    private static void f() {
-        count++;
+
+    // 100  - 171_700
+    // 1000 - 167_167_000
+    static void e(int n) {
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= i; j++)
+                for (int k = 1; k <= j; k++)
+                    f();
     }
 
 
