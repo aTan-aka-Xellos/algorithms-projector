@@ -5,16 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.StringTokenizer;
 
-/**
- * https://www.hackerrank.com/contests/projector-algo-base-9-hw-2-zpun0n6c/challenges/garland
- */
-public class Garland {
-
-    // TODO: unfinished - 58/60 TC passed
+public class GarlandWithFormula {
 
     private static PrintWriter out = new PrintWriter(System.out);
     private static InputReader in = new InputReader(System.in);
@@ -25,59 +18,41 @@ public class Garland {
         double a = in.nextDouble();
 
         out.println(String.format("%.4f", solve(n, a)));
-
         out.flush();
         out.close();
     }
 
     private static double solve(int n, double a) {
 
-        double lo = 0, hi = a, guess;
-        double prev_lo = lo, prev_hi = hi;
+        n -= 2;
+        double lo = 0, hi = Integer.MAX_VALUE;
 
-        double B = Integer.MAX_VALUE;
-        double next = Integer.MIN_VALUE;
-        double previous_next = Integer.MAX_VALUE;
-
-        boolean directionRight = true;
-
-        int count = 0;
-        while (count < 60) {
-            count++;
-
-            guess = (lo + hi) / 2;
-
+        while (hi - lo > 0.0001) {
             double prev = a;
-            double mid = guess;
+            double mid = (lo + hi) / 2;
+            // stupid formula of parabola
+            double minP = (mid - n * (n - a + 1)) / (n + 1);
 
-            for (int i = 0; i < n - 2; i++) {
-                next = Math.abs(2 * (mid + 1) - prev);
-                prev = mid;
-                mid = next;
-            }
+            double current = minP;
 
-            if (previous_next < next) {
-                if (directionRight) {
-                    lo = prev_lo;
-                } else {
-                    hi = prev_hi;
+            for (int i = 1; i < n; i++) {
+                double next = 2.0 * (current + 1.0) - prev;
+                if (next < minP) {
+                    minP = next;
                 }
-                directionRight = !directionRight;
+                prev = current;
+                current = next;
+                if (minP < 0)
+                    break;
             }
 
-            if (directionRight) {
-                prev_lo = lo;
-                lo = guess;
+            if (minP < 0) {
+                lo = mid;
             } else {
-                prev_hi = hi;
-                hi = guess;
+                hi = mid;
             }
-
-            B = Math.min(B, next);
-
-            previous_next = next;
         }
-        return B;
+        return lo;
     }
 
     private static class InputReader {
