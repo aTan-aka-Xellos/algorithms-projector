@@ -1,6 +1,6 @@
 package lectures;
 
-public class Lecture {
+public class Lecture_search {
 
     public static void main(String[] args) {
         System.out.println(div(100, 10));
