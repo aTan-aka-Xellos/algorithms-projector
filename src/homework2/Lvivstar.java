@@ -52,7 +52,10 @@ public class Lvivstar {
     }
 
 
-    static class InputReader {
+
+
+
+    private static class InputReader {
         BufferedReader reader;
         StringTokenizer tokenizer;
 

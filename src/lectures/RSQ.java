@@ -1,16 +1,17 @@
 package lectures;
 
+
 interface IRSQ {
     long sum(int l, int r);
 }
 
 public class RSQ implements IRSQ {
 
-    int[] data;
-    int blockNum;
-    int[] blocks;
+    private int[] data;
+    private int blockNum;
+    private int[] blocks;
 
-    public RSQ(int[] data) {
+    private RSQ(int[] data) {
         this.data = data;
         int n = data.length;
         blockNum = (int) Math.sqrt(n) + 1;
@@ -43,15 +44,15 @@ public class RSQ implements IRSQ {
             sum += data[i];
         }
 
-        // rightf part
+        // right part
         int startOfRightBlock = rBlock * blockNum;
         for (int i = startOfRightBlock; i < r; i++) {
             sum += data[i];
         }
 
-
+        // between
         for (int i = lBlock + 1; i < rBlock; i++) {
-            sum += data[i];
+            sum += blocks[i];
         }
         return sum;
     }
