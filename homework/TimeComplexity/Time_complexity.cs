@@ -32,9 +32,13 @@ for (i = 1; i <= n * n - 10; i++)
 			f()
 
 
-// 2 loops: n=3  1 + 2 + 3 = n(n+1)/2
+// 3-rd loop called j times (i=1 count=1, i=10, count=10)
+// count for 2 loops = j(j+1)/2
+// total: n * count
+
 // k(k+1)/2, k=n(n+1)/2
-// n(n+1)/2 * (n(n+1)/2 +1)/2 
+// n(n+1)/2 * (n(n+1)/2 +1)/2
+
 // O((n^4+2n^3+3n^2+2n)/8) - WRONG, n^3
 e.
 for (i = 1; i <= n; i++)
