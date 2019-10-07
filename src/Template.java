@@ -1,8 +1,15 @@
-package homework2;
-
 import static java.lang.String.format;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,7 +19,7 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LvivstarST {
+public class Template {
 
     private final static ByteArrayOutputStream INTERCEPTED_STREAM = new ByteArrayOutputStream();
     private final static PrintStream SYSTEM_OUT = System.out;
@@ -22,10 +29,12 @@ public class LvivstarST {
 
     public static void main(String[] args) {
 
-        String testFile = "resources/homework2/TC_%s.txt";
-        String testAns = "resources/homework2/TC_%sa.txt";
+        // edit the path
+        String testFile = "resources/homework/TC_%s.txt";
+        String testAns = "resources/homework/TC_%sa.txt";
 
-        int tcCount = 7;
+        // set 0 if version to submit
+        int tcCount = 0;
         for (int testCase = 0; testCase < tcCount; testCase++) {
 
             enableTestFromFile(format(testFile, testCase));
@@ -37,100 +46,34 @@ public class LvivstarST {
             out.flush();
         }
 
+        // this will run on submission only
         if (tcCount == 0) {
             solve();
         }
     }
 
+    /**
+     * Contains all code for the solution, including console read/write.
+     */
     private static void solve() {
 
-        int numberOfStations = in.nextInt();
-        int[] stationCounts = in.readArray(numberOfStations);
-        int queryNumber = in.nextInt();
+        int n = in.nextInt();
+        int[] array = in.readArray(n);
 
-        Blocks blocks = new Blocks(stationCounts);
-
-        for (int i = 0; i < queryNumber; i++) {
-            String query = in.next();
-
-            if (query.charAt(0) == 'E') {
-                blocks.updateStation(in.nextInt(), 1);
-            } else if (query.charAt(0) == 'L') {
-                blocks.updateStation(in.nextInt(), -1);
-            } else if (query.charAt(0) == 'C') {
-                int left  = in.nextInt();
-                int right = in.nextInt();
-
-                String result = String.valueOf(blocks.count(left, right));
-                out.println(result);
-            }
-        }
+        String result = "";
+        out.println(result);
 
         out.flush();
         out.close();
     }
 
 
-    private static class Blocks {
-
-        private int numberOfBlocks;
-        private long[] blocks;
-        private int[] stationCount;
-
-        Blocks(int[] stationCount) {
-            this.stationCount = stationCount;
-
-            numberOfBlocks = (int) (Math.sqrt(stationCount.length) + 1);
-            blocks = new long[numberOfBlocks];
-
-            for (int i = 0; i < stationCount.length; i++) {
-                blocks[i / numberOfBlocks] += stationCount[i];
-            }
-        }
-
-        private long count(int left, int right) {
-            long sum = 0;
-            int leftBlockIndex = --left / numberOfBlocks;
-            int rightBlockIndex = --right / numberOfBlocks;
-
-
-            if (leftBlockIndex == rightBlockIndex) {
-                for (int i = left; i <= right; i++) {
-                    sum += stationCount[i];
-                }
-                return sum;
-            }
-
-            // leftBlock, numberOfBlocks = number of items in the block (sqrt)
-            int endOfLeftBlock = (leftBlockIndex + 1) * numberOfBlocks - 1;
-            for (int i = left; i <= endOfLeftBlock; i++) {
-                sum += stationCount[i];
-            }
-
-            // rightBlock, numberOfBlocks = number of items in the block (sqrt)
-            int startOfRightBlock = (rightBlockIndex) * numberOfBlocks;
-            for (int i = startOfRightBlock; i <= right; i++) {
-                sum += stationCount[i];
-            }
-
-            // between
-            for (int i = leftBlockIndex + 1; i < rightBlockIndex; i++) { // check <=
-                sum += blocks[i];
-            }
-            return sum;
-        }
-
-
-        /**
-         * @value - if ENTER: 1, if LEAVE: -1
-         */
-        private void updateStation(int position, int value) {
-            position--;
-            stationCount[position] += value;
-            blocks[position / numberOfBlocks] += value;
-        }
-    }
-
+    /**
+     * Create interception stream and replace System.out with it.
+     *
+     * Sent file content to the stream.
+     * @param fileName path to the test file
+     */
     private static void enableTestFromFile(String fileName) {
         System.setOut(new PrintStream(INTERCEPTED_STREAM));
         out = new PrintWriter(System.out);
@@ -141,6 +84,13 @@ public class LvivstarST {
         }
     }
 
+    /**
+     * Read and return results from the interception stream.
+     *
+     * Set System.out back to default Stream.
+     * This is needed if we want to print something to the console between the tests.
+     * @return arrays of longs with results
+     */
     private static long[] getResultsFromInterceptedStream() {
         out.flush();
         String[] stringArray = INTERCEPTED_STREAM.toString().split("\r\n");
@@ -152,6 +102,9 @@ public class LvivstarST {
         return $.arrayStringToLong(stringArray);
     }
 
+    /**
+     * Fast reader.
+     */
     private static class InputReader {
         BufferedReader reader;
         StringTokenizer tokenizer;
@@ -230,7 +183,7 @@ public class LvivstarST {
     }
 
     /**
-     * Util class with different util methods.
+     * Util class with different util methods for testing.
      */
     private static class $ {
 
