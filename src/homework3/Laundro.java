@@ -45,7 +45,7 @@ public class Laundro {
 
         for (int i = 0; i < numberOfLoads; i++) {
 
-a
+
         }
 
 
