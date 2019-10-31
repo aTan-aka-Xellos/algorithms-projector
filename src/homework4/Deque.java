@@ -7,12 +7,14 @@ import java.util.NoSuchElementException;
 public class Deque<Item> implements Iterable<Item> {
 
     private int size = 0;
-    private Node head = new Node(null, null, null);
-    private Node tail = new Node(null, null, null);
+
+    // sentinel nodes
+    private Node head = new Node();
+    private Node tail = new Node();
 
     public Deque() {
-        head.setNext(tail);
-        tail.setPrev(head);
+        head.next = tail;
+        tail.prev = head;
     }
 
     public boolean isEmpty() {
@@ -26,17 +28,10 @@ public class Deque<Item> implements Iterable<Item> {
     public void addFirst(Item item) {
         if (item == null) throw new IllegalArgumentException();
 
-        // TODO test reference to self-head
-        // TODO bug with adding next Node(null,null,null)
-
-        if (size == 0) {
-            tail = head;
-        }
-
-        Node node = new Node(item, head, null);
-        head.setPrev(node);
-        head = node;
-
+        Node firstNode = head.next;
+        Node node = new Node(item, firstNode, head);
+        firstNode.prev = node;
+        head.next = node;
 
         size++;
     }
@@ -44,12 +39,10 @@ public class Deque<Item> implements Iterable<Item> {
     public void addLast(Item item) {
         if (item == null) throw new IllegalArgumentException();
 
-        // TODO test reference to self-tail
-        tail = new Node(item, null, tail);
-
-        if (size == 0) {
-            head = tail;
-        }
+        Node lastNode = tail.prev;
+        Node node = new Node(item, tail, lastNode);
+        lastNode.next = node;
+        tail.prev = node;
 
         size++;
     }
@@ -59,9 +52,12 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NoSuchElementException();
         }
 
-        Node node = head;
-        head = head.next;
-        return node.value; // TODO next = null?
+        Node firstNode = head.next;
+        head.next = firstNode.next; // point head to the current second node
+        head.next.prev = head;      // point current second node to the head
+
+        size--;
+        return firstNode.value;
     }
 
     public Item removeLast() {
@@ -69,10 +65,12 @@ public class Deque<Item> implements Iterable<Item> {
             throw new NoSuchElementException();
         }
 
-        Node node = tail;
-        tail = tail.prev; // TODO prev = null ?
+        Node lastNode = tail.prev;
+        tail.prev = lastNode.prev; // point tail to the current second from the end node
+        tail.prev.next = tail;     // point current second node from the end to the tail
 
-        return node.value;
+        size--;
+        return lastNode.value;
     }
 
     public Iterator<Item> iterator() {
@@ -81,11 +79,13 @@ public class Deque<Item> implements Iterable<Item> {
 
     private class NodeIterator implements Iterator<Item> {
 
-        Node cursor = head;
+        // point to the first node
+        Node cursor = head.next;
 
         @Override
         public boolean hasNext() {
-            return cursor.next != null;
+            // tail doesn't have value, so there is no 'next'
+            return cursor.value != null;
         }
 
         @Override
@@ -93,8 +93,9 @@ public class Deque<Item> implements Iterable<Item> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            cursor = cursor.next;
-            return cursor.value;
+            Item value = cursor.value;
+            cursor = cursor.next; // will point to the tail on the last iteration
+            return value;
         }
     }
 
@@ -103,39 +104,96 @@ public class Deque<Item> implements Iterable<Item> {
         Node next;
         Node prev;
 
+        Node () {
+        }
+
         Node(Item item, Node next, Node prev) {
             this.value = item;
             this.next = next;
             this.prev = prev;
         }
-
-        public void setNext(Node next) {
-            this.next = next;
-        }
-
-        public void setPrev(Node prev) {
-            this.prev = prev;
-        }
     }
 
-    // unit testing (required)
+    /*
+     * getArray basically test iterator
+     * NPE happens if there is a bug
+     * or the number of nodes won't match
+     */
     public static void main(String[] args) {
         Deque<Integer> deque = new Deque<>();
 
-        deque.addFirst(20);
-        deque.addFirst(10);
+        // ===== test iterator =====
+        assert !deque.iterator().hasNext();
+        assert Arrays.compare(getArray(deque), new int[]{}) == 0;
 
+        // ===== test addFirst, addLast =====
+        deque.addFirst(20);
+        assert deque.iterator().hasNext();
+        assert deque.size() == 1;
+        assert Arrays.compare(getArray(deque), new int[]{20}) == 0;
+
+        deque.addFirst(10);
+        assert deque.iterator().hasNext();
         assert deque.size() == 2;
         assert Arrays.compare(getArray(deque), new int[]{10,20}) == 0;
 
         deque.addLast(30);
-        deque.addLast(40);
+        assert deque.iterator().hasNext();
+        assert deque.size() == 3;
+        assert Arrays.compare(getArray(deque), new int[]{10,20,30}) == 0;
 
+        deque.addLast(40);
         assert deque.size() == 4;
+        assert deque.iterator().hasNext();
         assert Arrays.compare(getArray(deque), new int[]{10,20,30,40}) == 0;
 
+        System.out.println(Arrays.toString(getArray(deque)));
+
+        // ===== test removeFirst, removeLast =====
+        deque.removeFirst();
+        assert deque.iterator().hasNext();
+        assert deque.size() == 3;
+        assert Arrays.compare(getArray(deque), new int[]{20,30,40}) == 0;
+
+        deque.removeLast();
+        assert deque.iterator().hasNext();
+        assert deque.size() == 2;
+        assert Arrays.compare(getArray(deque), new int[]{20,30}) == 0;
+
+        deque.removeLast();
+        assert deque.iterator().hasNext();
+        assert deque.size() == 1;
+        assert Arrays.compare(getArray(deque), new int[]{20}) == 0;
+
+        deque.removeFirst();
+        assert !deque.iterator().hasNext();
+        assert deque.size() == 0;
+        assert Arrays.compare(getArray(deque), new int[]{}) == 0;
 
 
+        // ===== test different order of adding/removing items
+
+        deque = new Deque<>();
+
+        deque.addLast(40);
+        assert deque.size() == 1;
+        assert deque.iterator().hasNext();
+        assert Arrays.compare(getArray(deque), new int[]{40}) == 0;
+
+        deque.addFirst(30);
+        assert deque.iterator().hasNext();
+        assert deque.size() == 2;
+        assert Arrays.compare(getArray(deque), new int[]{30, 40}) == 0;
+
+        deque.removeFirst();
+        assert deque.iterator().hasNext();
+        assert deque.size() == 1;
+        assert Arrays.compare(getArray(deque), new int[]{40}) == 0;
+
+        deque.removeLast();
+        assert !deque.iterator().hasNext();
+        assert deque.size() == 0;
+        assert Arrays.compare(getArray(deque), new int[]{}) == 0;
     }
 
     private static int[] getArray(Deque<Integer> deque) { // TODO generics
@@ -143,9 +201,13 @@ public class Deque<Item> implements Iterable<Item> {
 
         int index = 0;
         for (Integer item : deque) {
-            array[index] = item;
+            array[index] = item; // NPE might occur if hasNext() has bug
             index++;
         }
+
+        // ensure that we travers through all nodes
+        assert index == deque.size();
+
         return array;
     }
 
