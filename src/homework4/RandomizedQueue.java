@@ -6,6 +6,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * https://www.cs.princeton.edu/courses/archive/spring19/cos226/assignments/queues/specification.php
+ * https://www.coursera.org/learn/algorithms-part1/programming/zamjZ/deques-and-randomized-queues
+ */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private int size = 0;
