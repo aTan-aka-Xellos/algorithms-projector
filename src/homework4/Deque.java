@@ -9,8 +9,8 @@ public class Deque<Item> implements Iterable<Item> {
     private int size = 0;
 
     // sentinel nodes
-    private Node head = new Node();
-    private Node tail = new Node();
+    private final Node head = new Node();
+    private final Node tail = new Node();
 
     public Deque() {
         head.next = tail;
@@ -104,7 +104,7 @@ public class Deque<Item> implements Iterable<Item> {
         Node next;
         Node prev;
 
-        Node () {
+        Node() {
         }
 
         Node(Item item, Node next, Node prev) {
@@ -114,7 +114,9 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    /*
+    /**
+     * Should be run with -ea flag
+     *
      * getArray basically test iterator
      * NPE happens if there is a bug
      * or the number of nodes won't match
@@ -123,6 +125,7 @@ public class Deque<Item> implements Iterable<Item> {
         Deque<Integer> deque = new Deque<>();
 
         // ===== test iterator =====
+        assert deque.isEmpty();
         assert !deque.iterator().hasNext();
         assert Arrays.compare(getArray(deque), new int[]{}) == 0;
 
@@ -130,6 +133,7 @@ public class Deque<Item> implements Iterable<Item> {
         deque.addFirst(20);
         assert deque.iterator().hasNext();
         assert deque.size() == 1;
+        assert !deque.isEmpty();
         assert Arrays.compare(getArray(deque), new int[]{20}) == 0;
 
         deque.addFirst(10);
@@ -168,6 +172,7 @@ public class Deque<Item> implements Iterable<Item> {
         deque.removeFirst();
         assert !deque.iterator().hasNext();
         assert deque.size() == 0;
+        assert deque.isEmpty();
         assert Arrays.compare(getArray(deque), new int[]{}) == 0;
 
 
